@@ -1,43 +1,94 @@
+import { useReducer } from 'react';
 import './App.css';
 
+export const ACTIONS = {
+  ADD_DIGIT: 'add-digit',
+  CHOOSE_OPERATION: 'choose-operation',
+  CLEAR: 'clear',
+  DELETE_DIGIT: 'delete-digit',
+  EVALUATE: 'evaluate',
+}
+
+function DigitButton({ dispatch, digit, id, className }) {
+  return (
+    <button id={id} onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })} className={className} >
+      {digit}
+    </button>
+  )
+}
+
+function OperationButton({ dispatch, operation, id }) {
+  return (
+    <button id={id} onClick={() => dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } })} >
+      {operation}
+    </button>
+  )
+}
+
+function reducer(state, { type, payload }) {
+  switch(type) {
+    case ACTIONS.ADD_DIGIT:
+      if (payload.digit === "0" && state.current === "0") {
+        return state
+      }
+      if (payload.digit === "." && state.current.includes(".")) {
+        return state
+      } 
+      return {
+        ...state,
+        current: `${state.current || ""}${payload.digit}`,
+      }
+
+      case ACTIONS.CLEAR:
+        return {}
+  }
+
+}
+
 function App() {
+  const [{ current, previous, operation }, dispatch] = useReducer(reducer, {});
+
   return (
     <>
-    <div className="calculator">
-      <div id="display" className="output">
-        <div className="previous">1123,1123 +</div>
-        <div className="current">245,3345</div>
+      <div className="calculator">
+        <div id="display" className="output">
+          <div className="previous">
+            {previous} {operation}
+          </div>
+          <div className="current">{current}</div>
+        </div>
+        <button id="clear" onClick={() => dispatch({ type: ACTIONS.CLEAR })} className="col-span-two">
+          AC
+        </button>
+        <OperationButton id="divide" operation="/" dispatch={dispatch} />
+        <OperationButton id="multiply" operation="*" dispatch={dispatch} />
+        <DigitButton id="seven" digit="7" dispatch={dispatch} />
+        <DigitButton id="eight" digit="8" dispatch={dispatch} />
+        <DigitButton id="nine" digit="9" dispatch={dispatch} />
+        <OperationButton id="add" operation="+" dispatch={dispatch} />
+        <DigitButton id="four" digit="4" dispatch={dispatch} />
+        <DigitButton id="five" digit="5" dispatch={dispatch} />
+        <DigitButton id="six" digit="6" dispatch={dispatch} />
+        <OperationButton id="subtract" operation="-" dispatch={dispatch} />
+        <DigitButton id="one" digit="1" dispatch={dispatch} />
+        <DigitButton id="two" digit="2" dispatch={dispatch} />
+        <DigitButton id="three" digit="3" dispatch={dispatch} />
+        <DigitButton id="zero" digit="0" dispatch={dispatch} className="col-span-two" />
+        <DigitButton id="decimal" digit="." dispatch={dispatch} />
+        <button id="equals" className="row-span-two">
+          =
+        </button>
       </div>
-      <button id="clear" className="col-span-two">
-        AC
-      </button>
-      <button id="divide">/</button>
-      <button id="multiply">*</button>
-      <button id="seven">7</button>
-      <button id="eight">8</button>
-      <button id="nine">9</button>
-      <button id="add">+</button>
-      <button id="four">4</button>
-      <button id="five">5</button>
-      <button id="six">6</button>
-      <button id="subtract">-</button>
-      <button id="one">1</button>
-      <button id="two">2</button>
-      <button id="three">3</button>
-      <button id="zero" className="col-span-two">0</button>
-      <button id="decimal">.</button>
-      <button id="equals" className="row-span-two">=</button>
-    </div>
-    <footer className="credit">
-      <p className="">
-      Made by{' '}
-      <span className="">
-        <a href="https://www.alfianahar.com/bio" target="_blank">
-          Alfian Nahar
-        </a>
-      </span>
-    </p>
-    </footer>
+      <footer className="credit">
+        <p className="">
+          Made by{' '}
+          <span className="">
+            <a href="https://www.alfianahar.com/bio" target="_blank">
+              Alfian Nahar
+            </a>
+          </span>
+        </p>
+      </footer>
     </>
   );
 }
