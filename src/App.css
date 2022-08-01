@@ -51,6 +51,7 @@ footer {
 .calculator > button:hover,
 .calculator > button:focus {
   background-color: #C7CCDB;
+  border: 1px solid black;
 }
 
 .col-span-two {
@@ -81,4 +82,19 @@ footer {
 .output .current {
   color: rgba(225, 229, 238);
   font-size: 2.5rem;
+}
+
+#clear {
+  background-color: orangered;
+  color:white
+}
+
+#equals {
+  background-color: teal;
+  color:white
+}
+
+#divide, #multiply, #subtract, #add {
+  background-color: honeydew;
+  color:black;
 }
