@@ -28,6 +28,13 @@ function OperationButton({ dispatch, operation, id }) {
 function reducer(state, { type, payload }) {
   switch(type) {
     case ACTIONS.ADD_DIGIT:
+      if (state.overwrite) {
+        return {
+          ...state,
+          current: payload.digit,
+          overwrite: false,
+        }
+      }
       if (payload.digit === "0" && state.current === "0") {
         return state
       }
@@ -38,11 +45,74 @@ function reducer(state, { type, payload }) {
         ...state,
         current: `${state.current || ""}${payload.digit}`,
       }
+      case ACTIONS.CHOOSE_OPERATION:
+        if (state.current == null && state.previous == null) {
+          return state
+        }
 
+        if (state.current == null) {
+          return {
+            ...state,
+            operation: payload.operation,
+          }
+        }
+
+        if (state.previous == null) {
+          return {
+            ...state,
+            operation: payload.operation,
+            previous: state.current,
+            current: null,
+          }
+        }
+
+        return {
+          ...state,
+          previous: evaluate(state),
+          operation: payload.operation,
+          current: null
+        }
       case ACTIONS.CLEAR:
-        return {}
-  }
+        return {
+          current: "0",
+          overwrite: true,
+        }
+      case ACTIONS.EVALUATE:
+        if (state.operation == null || state.current == null || state.previous == null) {
+          return state
+        }
 
+        return {
+          ...state,
+          overwrite: true,
+          previous: null,
+          operation: null,
+          current: evaluate(state)
+        }
+  }
+}
+
+function evaluate({ current, previous, operation}) {
+  const prev = parseFloat(previous)
+  const curr = parseFloat(current)
+  if (isNaN(prev) || isNaN(curr)) return ""
+  let calc = ""
+  switch (operation) {
+    case "+":
+      calc = prev + curr
+      break
+    case "-":
+      calc = prev - curr
+      break
+    case "*":
+      calc = prev * curr
+      break
+    case "/":
+      calc = prev / curr
+      break
+  }
+  
+  return calc.toString()
 }
 
 function App() {
@@ -75,7 +145,7 @@ function App() {
         <DigitButton id="three" digit="3" dispatch={dispatch} />
         <DigitButton id="zero" digit="0" dispatch={dispatch} className="col-span-two" />
         <DigitButton id="decimal" digit="." dispatch={dispatch} />
-        <button id="equals" className="row-span-two">
+        <button id="equals" onClick={() => dispatch({ type: ACTIONS.EVALUATE })} className="row-span-two">
           =
         </button>
       </div>
