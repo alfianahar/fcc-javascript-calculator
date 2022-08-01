@@ -50,10 +50,32 @@ function reducer(state, { type, payload }) {
           return state
         }
 
-        if (state.current == null) {
+        if (state.current == null && payload.operation === "-" ) {
+          return {
+            ...state,
+            current: payload.operation,
+          }
+        }
+
+        if (state.current == null ) {
           return {
             ...state,
             operation: payload.operation,
+          }
+        }
+        
+        if (state.current === "-") {
+          return {
+            ...state,
+            operation: payload.operation,
+            current: null,
+          }
+        }
+
+        if (state.current == null  ) {
+          return {
+            ...state,
+            operation: payload.operation,            
           }
         }
 
